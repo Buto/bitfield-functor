@@ -153,7 +153,7 @@
 //
 //          Ironically the advantage of functors is that a functor call
 //          appears to be indistinguishable from calling a C function.
-//          (And what appears simpler than a C function call?)
+//          (And does anything appears simpler than a C function call?)
 //
 //          This example's vacuum solenoid functors have the additional
 //          advantage of being typesafe. For example it is impossible to
