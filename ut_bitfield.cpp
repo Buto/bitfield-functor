@@ -221,11 +221,20 @@ int ut_verify_lamp_state(
 // verify that the ctor set solenoid2 to vacuum:OFF
 int ut00()
 {
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid2 to vacuum:OFF" };
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     return ut_verify_solenoid_state(
                                         std::string { __func__ }, // utid,
@@ -238,11 +247,20 @@ int ut00()
 // verify that the ctor set solenoid3 to vacuum:OFF
 int ut01()
 {
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #2
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid3 to vacuum:OFF" };
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     return ut_verify_solenoid_state(
                                         std::string { __func__ }, // utid,
@@ -256,6 +274,10 @@ int ut01()
 // verify that the ctor sets the floodlamp to LIGHTS_OUT
 int ut02()
 {
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     // ctor initializes the floodlamp to LIGHTS_OUT
@@ -276,9 +298,18 @@ int ut03()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the solenoid2's functor can return solenoid state prior to the functor call" };
@@ -316,9 +347,18 @@ int ut04()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #2
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the solenoid3's functor can return solenoid state prior to the functor call" };
@@ -355,11 +395,20 @@ int ut05()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
 
     vac_solenoid2(vacuum::ON);
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the solenoid2's functor can return solenoid state prior to the functor call" };
@@ -397,11 +446,20 @@ int ut06()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #2
+    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #3
 
     vac_solenoid3(vacuum::ON);
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the solenoid3's functor can return solenoid state prior to the functor call" };
@@ -439,9 +497,18 @@ int ut07()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the floodlamp's functor can return solenoid state prior to the functor call" };
@@ -479,9 +546,18 @@ int ut08()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
@@ -522,9 +598,18 @@ int ut09()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
@@ -565,9 +650,18 @@ int ut10()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
@@ -608,9 +702,18 @@ int ut11()
 {
     int something_failed = 0;
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     {
         std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
@@ -650,6 +753,10 @@ int ut12()
 {
     int something_failed = 0;    // init to UT passing
 
+    //------------------------------------------------------------
+    //
+    // setup for unit test
+    //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
@@ -658,6 +765,11 @@ int ut12()
     std::stringstream ut_intent {};
     ut_intent <<  "Verifing floodlamp throws 'Out of Range' exception.";
     ut_intent <<  "......................................................";   // note4
+
+    //------------------------------------------------------------
+    //
+    // conduct unit test
+    //
 
     std::cout << std::string { __func__ } << ": ";  // output utid to stdout
 
