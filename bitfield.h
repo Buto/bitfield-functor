@@ -216,40 +216,6 @@
 //      then be used to augment exception error messages.
 //
 //=============================================================================
-//
-// Stuff that doesn't work
-//
-// example1:
-//
-// typedef enum vac_solenoid_e
-// {
-//     vacuum_off = 0,  // vacuum solenoid de-energized
-//     vacuum_on  = 1,  // vacuum solenoid energized
-//     solenoid_OOR     // Out Of Range
-// } solenoid_t;
-//
-// typedef solenoid_t  solenoid2_t;  // this isn't going to work
-// typedef solenoid_t  solenoid3_t;  // this isn't going to work
-//
-// class template partial specialization
-// for the vac_solenoid2 control functor
-//template< typename bf >
-//class set_bits< bf, solenoid2_t >
-//{ ... };
-//
-//template< typename bf >
-//class set_bits< bf, solenoid3_t >   // ERROR:  error: redefinition of ‘class set_bits<bf, vac_solenoid_e>’
-//{ ... };
-//
-// analysis of why example1 doesn't work:
-//      Evidently the C++ "collapses" a sequences of typedefs,say, in the form of:
-//     typedef enum foo_e {...} foo_t;
-//     typedef enum foo_t foo1_t;
-//     typedef enum foo_t foo2_t;
-// such that both foo1_t and foo2_t resolve back to foo_t.
-// This causes the attempt to create a partial template specialization for class set_bits< bf, solenoid3_t > to fail.
-//
-//=============================================================================
 
 // bit fields for the our toy "register"
 struct genpurpIO_register
