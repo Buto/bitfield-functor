@@ -175,10 +175,28 @@
 //          Of course you can obtain the same behavior with a
 //          standard class by overloading a method.
 //
-//      Conclusion: I cannot, with a straight face, make an argument that
-//                  either approach has a particularly strong advantage.
-//                  Both seem tolerable to me. I think I like the functors
-//                  better.
+//      Conclusion:
+//
+//          I cannot, with a straight face, make an argument that
+//          either approach has a particularly strong advantage.
+//
+//          That said, one important design consideration is that
+//          it is permissible to make the implementation somewhat
+//          more complex in exchange for simplifying the iterface.
+//          For example,
+//
+//              vac_solenoid2(vacuum::ON);
+//
+//          is an simpler interface than:
+//
+//              obj.vac_solenoid2(vacuum::ON);
+//
+//          This consideration becomes more compelling if the usage
+//          of a functor occurs many more times that the effort
+//          required to setup a functor.
+//
+//          Consequently, I am willing to rationalize that functors
+//          are a more perferred implementation.
 //
 // About practicality:
 //
