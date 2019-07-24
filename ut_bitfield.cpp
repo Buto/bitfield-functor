@@ -225,9 +225,10 @@ int ut00()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
+    // create functor for controlling vacuum solenoid #2
+    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid2 to vacuum:OFF" };
 
@@ -253,7 +254,8 @@ int ut01()
     //
     static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #2
+    // create functor for controlling vacuum solenoid #3
+    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 };
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid3 to vacuum:OFF" };
 
@@ -278,9 +280,9 @@ int ut02()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    // ctor initializes the floodlamp to LIGHTS_OUT
+    // create functor for controlling floodlamp #42. ctor initializes the floodlamp to LIGHTS_OUT
     set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
 
     std::string ut_intent {  "verifing that the ctor initialized floodlamp to LIGHTS_OUT" };
@@ -302,9 +304,10 @@ int ut03()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
+    // create functor for controlling vacuum solenoid #2
+    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -351,9 +354,10 @@ int ut04()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #2
+    // create functor for controlling vacuum solenoid #3
+    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum   > vac_solenoid3{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -399,9 +403,10 @@ int ut05()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 }; // for vacuum solenoid #2
+    // create functor for controlling vacuum solenoid #2
+    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
 
     vac_solenoid2(vacuum::ON);
 
@@ -450,9 +455,10 @@ int ut06()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum > vac_solenoid3{ &mock_reg84 }; // for vacuum solenoid #3
+    // create functor for controlling vacuum solenoid #3
+    set_bits< struct genpurpIO_register*, solenoid3_t, vacuum > vac_solenoid3{ &mock_reg84 };
 
     vac_solenoid3(vacuum::ON);
 
@@ -501,9 +507,10 @@ int ut07()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -550,9 +557,10 @@ int ut08()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -602,9 +610,10 @@ int ut09()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -654,9 +663,10 @@ int ut10()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -706,9 +716,10 @@ int ut11()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
     //------------------------------------------------------------
     //
@@ -757,9 +768,10 @@ int ut12()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
+    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
-    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 }; // for lamp #42
+    // create functor for controlling floodlamp #42
+    set_bits< struct genpurpIO_register*, floodlight_t, floodlight_t > flood_light42{ &mock_reg84 };
 
 
     std::stringstream ut_intent {};
