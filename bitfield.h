@@ -201,11 +201,14 @@
 // About practicality:
 //
 //      Each group of bits in a bit field is called a 'field'.
-//      In this toy application the two named fields are:
-//          1) energize_vac_solenoid
-//          2) floodlight_pwr
+//      In this toy application the named fields are:
+//
+//          1) energize_vac_solenoid2
+//          2) energize_vac_solenoid3
+//          3) floodlight_pwr
+//
 //      The solution I found required a partial specialization class template for
-//      each field.
+//      each named field.
 //
 //      Each partial specialization defines a different functor.
 //      Each functor manages a distinct field in the bit field.
@@ -216,11 +219,16 @@
 //      error handling is easier to implement in a function than in a macro.
 //
 //      The cost of this scheme is that we have to write a partial
-//      specialization class template for each field in the register.
+//      specialization class template for each named field in the register.
 //      The tradeoff is that it is more convenient to provide greater
 //      functionality to functors than to macros.
 //
-//      Another cost is that we have to create a distinct type for each bitfield.
+//      Another cost is that, because each named field requires its own
+//      partial template specialization, and because each partial template
+//      specialization requires a distinct type
+//
+//
+// we have to create a distinct type for each bitfield.
 //      For example, the toy "register" has one bit for controlling a
 //
 // this toy application has a type named solenoid2_t, which creates
@@ -244,6 +252,8 @@ struct genpurpIO_register
      std::uint16_t                        : 11;   // fill to 16 bits
 };
 
+typedef struct genpurpIO_register* gpio_reg_ptr_t;
+
 enum class vacuum: unsigned int
 {
     OFF,  // de-energizing the vacuum solenoid closes the valve, removing the vacuum
@@ -266,33 +276,28 @@ const std::uint16_t     VERY_DIM_LIGHTS   = 1; // Note1
 const std::uint16_t     LIGHTS_OUT        = 0;
 
 //-------- These typedefs only exist to instantiate partial specializations ----------
-typedef enum vac_solenoid2_e
-{
-    solenoid2_OOR  = 2
-} solenoid2_t;
 
-typedef enum vac_solenoid3_e
-{
-    solenoid3_OOR  = 2
-} solenoid3_t;
-
+typedef struct solenoid2 * solenoid2_t;
+typedef struct solenoid3 * solenoid3_t;
 typedef std::uint16_t   floodlight_t;
 
 //-------- end of partial specialization typedefs ----------
+#define MINIMUM_PARAMETERS
 
 // primary template
-template< typename bf, typename field, typename value >
-class set_bits { };
+template< typename field>
+class set_bits; // no need to define set_bits b/c the primary template is never instantiated.
 
 // class template partial specialization
 // for the vac_solenoid2 control functor
-template< typename bf>
-class set_bits< bf, solenoid2_t, vacuum  >
+template< >
+class set_bits< solenoid2_t  >
 {
 public:
-    set_bits( bf fld ) : reg{fld} // ctor saves register's address
+    set_bits()  : preg(&reg)
     {
-        reg->energize_vac_solenoid2 = 0;  // close the valve on startup
+        reg.energize_vac_solenoid2 = 0;  // close the valve on startup
+        // works ver1 reg->energize_vac_solenoid2 = 0;  // close the valve on startup
     }
 
     // functor for controlling the vacuum solenoid
@@ -300,10 +305,12 @@ public:
     vacuum operator() (vacuum val)
     {
         // store the solenoid's 'prior to call' state
-        vacuum retval = (reg->energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
+        vacuum retval = (reg.energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
+        // works ver1 vacuum retval = (reg->energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
 
         // set solenoid to new state
-        reg->energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
+        reg.energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
+        // works ver 1 reg->energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
 
         // return the solenoid's 'prior to call' state
         return retval;
@@ -316,7 +323,8 @@ public:
         vacuum retval = vacuum::OFF;
 
         // if power is currently applied to the vacuum solenoid
-        if (reg->energize_vac_solenoid2 == 1)
+        // works ver 1 if (reg->energize_vac_solenoid2 == 1)
+        if (reg.energize_vac_solenoid2 == 1)
         {
             retval = vacuum::ON;
         }
@@ -325,19 +333,26 @@ public:
     }
 
 private:
-    volatile bf  reg;
+    // in real life the preg would have to be
+    // made to point to its register's memory address.
+    // For example:
+    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
+
+    volatile struct genpurpIO_register  reg;
+    volatile struct genpurpIO_register*  preg;
 };
+
 
 
 // class template partial specialization
 // for the vac_solenoid3 control functor
-template< typename bf>
-class set_bits< bf, solenoid3_t, vacuum >
+template<>
+class set_bits< solenoid3_t>
 {
 public:
-    set_bits( bf fld ) : reg{fld} // ctor saves register's address
+    set_bits()  : preg(&reg)
     {
-        reg->energize_vac_solenoid3 = 0;  // close the valve on startup
+        preg->energize_vac_solenoid3 = 0;  // close the valve on startup
     }
 
     // functor for controlling the vacuum solenoid
@@ -345,10 +360,10 @@ public:
     vacuum operator() (vacuum val)
     {
         // store the solenoid's 'prior to call' state
-        vacuum retval = (reg->energize_vac_solenoid3 == 0 ? vacuum::OFF : vacuum::ON );
+        vacuum retval = (preg->energize_vac_solenoid3 == 0 ? vacuum::OFF : vacuum::ON );
 
         // set solenoid to new state
-        reg->energize_vac_solenoid3 = (val == vacuum::OFF ? 0 : 1);
+        preg->energize_vac_solenoid3 = (val == vacuum::OFF ? 0 : 1);
 
         // return the solenoid's 'prior to call' state
         return retval;
@@ -361,7 +376,7 @@ public:
         vacuum retval = vacuum::OFF;
 
         // if power is currently applied to the vacuum solenoid
-        if (reg->energize_vac_solenoid3 == 1)
+        if (preg->energize_vac_solenoid3 == 1)
         {
             retval = vacuum::ON;
         }
@@ -370,18 +385,24 @@ public:
     }
 
 private:
-    volatile bf  reg;
+    // in real life the preg would have to be
+    // made to point to its register's memory address.
+    // For example:
+    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
+
+    volatile struct genpurpIO_register  reg;
+    volatile struct genpurpIO_register*  preg;
 };
 
 // class template partial specialization
 // for the floodlight control functor
-template< typename bf>
-class set_bits< bf, floodlight_t, floodlight_t >
+template<>
+class set_bits< floodlight_t >
 {
 public:
-    set_bits( bf fld ) : reg{fld} // ctor saves register's address
+    set_bits()  : preg(&reg)
     {
-        reg->floodlight_pwr = LIGHTS_OUT;  // kill the floodlamp on startup
+        preg->floodlight_pwr = LIGHTS_OUT;  // kill the floodlamp on startup
     }
 
     // functor for controlling the floodlamp's power setting
@@ -397,9 +418,9 @@ public:
         }
 
         // store the floodlamp's 'prior to call' power setting
-        std::uint16_t retval = reg->floodlight_pwr;
+        std::uint16_t retval = preg->floodlight_pwr;
 
-        reg->floodlight_pwr = {val};     // update floodlight power setting
+        preg->floodlight_pwr = {val};     // update floodlight power setting
 
         // return the floodlamp's 'prior to call' power setting
         return retval;
@@ -408,12 +429,19 @@ public:
     // functor for returning the floodlamp's power setting
     std::uint16_t operator() ()
     {
-        return reg->floodlight_pwr;
+        return preg->floodlight_pwr;
     }
 
 
 private:
-    volatile bf  reg;
+    // in real life preg would have to be
+    // made to point to its register's memory address.
+    // For example:
+    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
+
+    volatile struct genpurpIO_register  reg;
+    volatile struct genpurpIO_register*  preg;
 };
+
 
 
