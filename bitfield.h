@@ -34,14 +34,66 @@
 // --------------------------------------------------------------------
 //
 // For this exercise I am creating functors for setting a specific
-// bit field in a register.  This register maps to 16 bits of
-// general purpose I/O (GPIO.)
+// bit field in a register.  These functors are for two kinds of
+// registers:
+//
+//      1)  A that provides 16 bits of general purpose I/O (GPIO.); and
+//      2)  The registers belonging to an [NEED_IC_ID], an off-the-shelf
+//          intergrated circuit.
+//
+// In the GPIO register's case:
+//
+// For the GPIO register the usage of the bits is completely dependent on
+// how the hardware engineer electrically interconnected the device's
+// GPIO pins to to other devices on the control board. This means that
+// the particular effect of twiddling a particular GPIO bit or bits will
+// be unique to this design.
+//
+// This has consequences for reusability. The point of templates is to
+// facilitate 'generic programming', that is, maximally (SP?) reusable
+// software. Ironically, the highly hardware implementation specific
+// concerns of register bit-twiddling defeats generic programming's
+// intent of code reuse.
+//
+// This means you cannot expect to reuse functors created for
+// customizeable registers on other, unreleated, designs.
+// Complete inability to reuse these  functors has implications for
+// an aspect of the functor's implementation: minimum parameterization.
+//
+// Each functor is implemented via a partial template specialization.
+// In the case of each of the GPIO's functors these partial template
+// specialization only have a single parameter: a type only used
+// to select it out of the list of available partial template specializations.
+//
+// Put another way, in the case of the GPIO functors there is
+// no point in parameterizing details such as the GPIO's register's
+// address because all of such information is known and
+// controled by the hardware's design.
+//
+// [I need to be careful here, it is conceivable that a particular GPIO
+// register's design might be reused on another in-house design. This
+// invalidates this argument.]
+//
+// In the NEED_IC_ID's case:
+//
+// In the case of an given mass-manufactured device, one that is not
+// field programmable so that its registers usage is customizeable,
+// as in the case of NEED_IC_ID, the said device's register layouts will always
+// be the same.  In this sort of case code reuse is practical.
+//
+//
+// For the GPIO register the usage of the bits is completely dependent on
+// how the hardware engineer electrically interconnected the device's
+// GPIO pins to to other devices on the control board. This means that
+// the particular effect of twiddling a particular GPIO bit or bits will
+// be unique to this design.
+//
 //
 // This GPIO register controls:
 //      1) two solenoids, each of which operate a valve on a vaccum line; and
 //      2) a floodlamp's brightness.
 //
-// Assume the necessary exteneral circuitry is implemented. For example:
+// Assume the necessary external circuitry is implemented. For example:
 //      1)  Assume that the bits associated with controlling the
 //          vaccum solenoids are connected to circuity (relay drivers,
 //          most likely) suitable for controlling power to a
@@ -81,8 +133,10 @@
 //
 // Annoyances:
 //
-//      1)  The point of templates is to facilitate 'generic programming'.
-//          Unfortunately, the highly hardware implementation specific
+//      1)  Unresusable
+//
+// The point of templates is to facilitate 'generic programming'.
+//          Ironically, the highly hardware implementation specific
 //          concerns of register bit-twiddling defeats generic programming's
 //          intent of code reuse.
 //
@@ -243,8 +297,11 @@
 //
 //=============================================================================
 
+// in real life there we can expect multiple GPIO registers. In this toy
+// example we happen to be working with GPIO register #23
+
 // bit fields for the our toy "register"
-struct genpurpIO_register
+struct genpurpIO_register23
 {
      std::uint16_t energize_vac_solenoid2 : 1;    // set to 1 to apply vacuum
      std::uint16_t energize_vac_solenoid3 : 1;    // set to 1 to apply vacuum
@@ -252,7 +309,7 @@ struct genpurpIO_register
      std::uint16_t                        : 11;   // fill to 16 bits
 };
 
-typedef struct genpurpIO_register* gpio_reg_ptr_t;
+typedef struct genpurpIO_register23* gpio_reg23_ptr_t;
 
 enum class vacuum: unsigned int
 {
@@ -282,22 +339,20 @@ typedef struct solenoid3 * solenoid3_t;
 typedef std::uint16_t   floodlight_t;
 
 //-------- end of partial specialization typedefs ----------
-#define MINIMUM_PARAMETERS
 
 // primary template
 template< typename field>
-class set_bits; // no need to define set_bits b/c the primary template is never instantiated.
+class gpio_register_23; // no need to define gpio_register_23 b/c the primary template is never instantiated.
 
 // class template partial specialization
 // for the vac_solenoid2 control functor
 template< >
-class set_bits< solenoid2_t  >
+class gpio_register_23< solenoid2_t  >
 {
 public:
-    set_bits()  : preg(&reg)
+    gpio_register_23(gpio_reg23_ptr_t preg_)  : preg(preg_)
     {
-        reg.energize_vac_solenoid2 = 0;  // close the valve on startup
-        // works ver1 reg->energize_vac_solenoid2 = 0;  // close the valve on startup
+        preg->energize_vac_solenoid2 = 0;  // close the valve on startup
     }
 
     // functor for controlling the vacuum solenoid
@@ -305,12 +360,10 @@ public:
     vacuum operator() (vacuum val)
     {
         // store the solenoid's 'prior to call' state
-        vacuum retval = (reg.energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
-        // works ver1 vacuum retval = (reg->energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
+        vacuum retval = (preg->energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
 
         // set solenoid to new state
-        reg.energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
-        // works ver 1 reg->energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
+        preg->energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
 
         // return the solenoid's 'prior to call' state
         return retval;
@@ -323,8 +376,7 @@ public:
         vacuum retval = vacuum::OFF;
 
         // if power is currently applied to the vacuum solenoid
-        // works ver 1 if (reg->energize_vac_solenoid2 == 1)
-        if (reg.energize_vac_solenoid2 == 1)
+        if (preg->energize_vac_solenoid2 == 1)
         {
             retval = vacuum::ON;
         }
@@ -333,13 +385,7 @@ public:
     }
 
 private:
-    // in real life the preg would have to be
-    // made to point to its register's memory address.
-    // For example:
-    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
-
-    volatile struct genpurpIO_register  reg;
-    volatile struct genpurpIO_register*  preg;
+    volatile gpio_reg23_ptr_t preg;
 };
 
 
@@ -347,10 +393,10 @@ private:
 // class template partial specialization
 // for the vac_solenoid3 control functor
 template<>
-class set_bits< solenoid3_t>
+class gpio_register_23< solenoid3_t>
 {
 public:
-    set_bits()  : preg(&reg)
+    gpio_register_23(gpio_reg23_ptr_t preg_)  : preg(preg_)
     {
         preg->energize_vac_solenoid3 = 0;  // close the valve on startup
     }
@@ -385,22 +431,16 @@ public:
     }
 
 private:
-    // in real life the preg would have to be
-    // made to point to its register's memory address.
-    // For example:
-    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
-
-    volatile struct genpurpIO_register  reg;
-    volatile struct genpurpIO_register*  preg;
+    volatile gpio_reg23_ptr_t preg;
 };
 
 // class template partial specialization
 // for the floodlight control functor
 template<>
-class set_bits< floodlight_t >
+class gpio_register_23< floodlight_t >
 {
 public:
-    set_bits()  : preg(&reg)
+    gpio_register_23(gpio_reg23_ptr_t preg_)  : preg(preg_)
     {
         preg->floodlight_pwr = LIGHTS_OUT;  // kill the floodlamp on startup
     }
@@ -434,13 +474,7 @@ public:
 
 
 private:
-    // in real life preg would have to be
-    // made to point to its register's memory address.
-    // For example:
-    // set_bits() : preg( reinterpret_cast<struct genpurpIO_register*>(0x12345678) )
-
-    volatile struct genpurpIO_register  reg;
-    volatile struct genpurpIO_register*  preg;
+    volatile gpio_reg23_ptr_t preg;
 };
 
 

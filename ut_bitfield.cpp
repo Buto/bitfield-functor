@@ -32,7 +32,7 @@ void print_vac_state( std::uint16_t val)
 //                  real life the 'register' will need to
 //                  be R/W, not just write-only
 
-void print_reg(struct genpurpIO_register* reg)
+void print_reg(struct genpurpIO_register23* reg)
 {
     std::cout << "reg value (raw bits)" << reg->energize_vac_solenoid2  << std::endl;
     std::cout << "reg value (raw bits)" << reg->energize_vac_solenoid3  << std::endl;
@@ -120,6 +120,31 @@ static inline void rtrim(std::string &s)
 //          I am padding with dots instead of whitespace because
 //          the row of dots guide the viewer's eyes from the
 //          text to the corresponding "ok"|"FAILED!" indication.
+//
+//
+//==================================================================
+//
+//  Commentary about this "GPIO register #23":
+//
+//      In real life hardware registers will exist at an address assigned by
+//      someone on the hardware team. These addresses ought to be specified in
+//      as named constants (eliminating 'magic numbers' elsewhere in the code)
+//      via a project-wide header file. For example:
+//
+//          static const unsigned REGISTER_ADDRESS_GPIO23 = 0x12345678;
+//
+//      Afterward instantating a functor would look something like:
+//
+//          gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+//
+//      Setup a named constant storing the GPIO register's address for the purposes of the UT
+//
+    static struct genpurpIO_register23 mock_reg23;   // This is masquerading as GPIO register #23
+
+    // create a named constant for storing the "register's" address
+    static const gpio_reg23_ptr_t REGISTER_ADDRESS_GPIO23 = &mock_reg23;
+
+//==================================================================
 
 
 // ut_verify_solenoid_state() general purpose UT boilerplate for
@@ -225,15 +250,9 @@ int ut00()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
     // create functor for controlling vacuum solenoid #2
-#if !defined(MINIMUM_PARAMETERS)
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
-#else
-    // works ver 1 set_bits< gpio_reg_ptr_t, solenoid2_t   > vac_solenoid2{ &mock_reg84 };
-    set_bits< solenoid2_t   > vac_solenoid2{};
-#endif
+    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
     std::string ut_intent {  "verifing that the ctor initialized solenoid2 to vacuum:OFF" };
 
     //------------------------------------------------------------
@@ -249,7 +268,6 @@ int ut00()
                                    );
 }
 
-#if defined(MINIMUM_PARAMETERS)
 // verify that the ctor set solenoid3 to vacuum:OFF
 int ut01()
 {
@@ -257,10 +275,9 @@ int ut01()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // This is masquerading as a 16 bit "register"
 
     // create functor for controlling vacuum solenoid #3
-    set_bits< solenoid3_t > vac_solenoid3{};
+    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid3 to vacuum:OFF" };
 
@@ -276,7 +293,6 @@ int ut01()
                                         vacuum::OFF               // solenoid's expected state
                                    );
 }
-#endif
 
 
 // verify that the ctor sets the floodlamp to LIGHTS_OUT
@@ -287,7 +303,7 @@ int ut02()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42. ctor initializes the floodlamp to LIGHTS_OUT
-    set_bits< floodlight_t > flood_light42{}; // for lamp #42
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) }; // for lamp #42
 
     std::string ut_intent {  "verifing that the ctor initialized floodlamp to LIGHTS_OUT" };
 
@@ -308,15 +324,9 @@ int ut03()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
     // create functor for controlling vacuum solenoid #2
-#if !defined(MINIMUM_PARAMETERS)
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
-#else
-    // works ver1 set_bits< struct genpurpIO_register*, solenoid2_t   > vac_solenoid2{ &mock_reg84 };
-    set_bits< solenoid2_t   > vac_solenoid2{};
-#endif
+    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -365,7 +375,7 @@ int ut04()
     //
 
     // create functor for controlling vacuum solenoid #3
-    set_bits< solenoid3_t > vac_solenoid3{};
+    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -412,12 +422,7 @@ int ut05()
     // setup for unit test
     //
     // create functor for controlling vacuum solenoid #2
-#if !defined(MINIMUM_PARAMETERS)
-    set_bits< struct genpurpIO_register*, solenoid2_t, vacuum   > vac_solenoid2{ &mock_reg84 };
-#else
-    set_bits<solenoid2_t   > vac_solenoid2{};
-    //works ver 1 set_bits< struct genpurpIO_register*, solenoid2_t   > vac_solenoid2{ &mock_reg84 };
-#endif
+    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     vac_solenoid2(vacuum::ON);
 
@@ -468,7 +473,7 @@ int ut06()
     //
 
     // create functor for controlling vacuum solenoid #3
-    set_bits< solenoid3_t > vac_solenoid3{};
+    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     vac_solenoid3(vacuum::ON);
 
@@ -518,7 +523,7 @@ int ut07()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -565,10 +570,9 @@ int ut08()
     //
     // setup for unit test
     //
-    static struct genpurpIO_register mock_reg84;   // mock_reg84 is masquerading as a 16 bit "register"
 
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -619,7 +623,7 @@ int ut09()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -670,7 +674,7 @@ int ut10()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -721,7 +725,7 @@ int ut11()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -771,7 +775,7 @@ int ut12()
     // setup for unit test
     //
     // create functor for controlling floodlamp #42
-    set_bits< floodlight_t > flood_light42{};
+    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
 
     std::stringstream ut_intent {};
