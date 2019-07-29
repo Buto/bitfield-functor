@@ -340,13 +340,16 @@ typedef std::uint16_t   floodlight_t;
 
 //-------- end of partial specialization typedefs ----------
 
+// note2: no need to define gpio_register_23 b/c the
+// primary template is never instantiated.
+
 // primary template
 template< typename field>
-class gpio_register_23; // no need to define gpio_register_23 b/c the primary template is never instantiated.
+class gpio_register_23;    // note2
 
 // class template partial specialization
 // for the vac_solenoid2 control functor
-template< >
+template<>
 class gpio_register_23< solenoid2_t  >
 {
 public:
