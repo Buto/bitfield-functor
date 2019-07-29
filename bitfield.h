@@ -336,16 +336,16 @@ const std::uint16_t     LIGHTS_OUT        = 0;
 
 typedef struct solenoid2 * solenoid2_t;
 typedef struct solenoid3 * solenoid3_t;
-typedef std::uint16_t   floodlight_t;
+typedef std::uint16_t      floodlight_t;
 
 //-------- end of partial specialization typedefs ----------
 
-// note2: no need to define gpio_register_23 b/c the
-// primary template is never instantiated.
+// Note2:   no need to define gpio_register_23 b/c the
+//          primary template is never instantiated.
 
 // primary template
 template< typename field>
-class gpio_register_23;    // note2
+class gpio_register_23;    // Note2
 
 // class template partial specialization
 // for the vac_solenoid2 control functor
@@ -363,7 +363,7 @@ public:
     vacuum operator() (vacuum val)
     {
         // store the solenoid's 'prior to call' state
-        vacuum retval = (preg->energize_vac_solenoid2 == 0 ? vacuum::OFF : vacuum::ON );
+        vacuum retval = get_current_state();
 
         // set solenoid to new state
         preg->energize_vac_solenoid2 = (val == vacuum::OFF ? 0 : 1);
@@ -372,8 +372,14 @@ public:
         return retval;
     }
 
-    // functor for returning the vacuum solenoid's state
+    // functor for returning the vacuum solenoid's current state
     vacuum operator() ()
+    {
+        return get_current_state();
+    }
+
+private:
+    vacuum get_current_state()
     {
         // init to vacuum solenoid is currently de-energized
         vacuum retval = vacuum::OFF;
@@ -387,7 +393,6 @@ public:
         return retval;
     }
 
-private:
     volatile gpio_reg23_ptr_t preg;
 };
 
@@ -396,7 +401,7 @@ private:
 // class template partial specialization
 // for the vac_solenoid3 control functor
 template<>
-class gpio_register_23< solenoid3_t>
+class gpio_register_23< solenoid3_t >
 {
 public:
     gpio_register_23(gpio_reg23_ptr_t preg_)  : preg(preg_)
@@ -409,7 +414,7 @@ public:
     vacuum operator() (vacuum val)
     {
         // store the solenoid's 'prior to call' state
-        vacuum retval = (preg->energize_vac_solenoid3 == 0 ? vacuum::OFF : vacuum::ON );
+        vacuum retval = get_current_state();
 
         // set solenoid to new state
         preg->energize_vac_solenoid3 = (val == vacuum::OFF ? 0 : 1);
@@ -418,8 +423,14 @@ public:
         return retval;
     }
 
-    // functor for returning the vacuum solenoid's state
+    // functor for returning the vacuum solenoid's current state
     vacuum operator() ()
+    {
+        return get_current_state();
+    }
+
+private:
+    vacuum get_current_state()
     {
         // init to vacuum solenoid is currently de-energized
         vacuum retval = vacuum::OFF;
@@ -433,7 +444,6 @@ public:
         return retval;
     }
 
-private:
     volatile gpio_reg23_ptr_t preg;
 };
 
@@ -461,7 +471,7 @@ public:
         }
 
         // store the floodlamp's 'prior to call' power setting
-        std::uint16_t retval = preg->floodlight_pwr;
+        std::uint16_t retval = get_current_state();
 
         preg->floodlight_pwr = {val};     // update floodlight power setting
 
@@ -469,14 +479,19 @@ public:
         return retval;
     }
 
-    // functor for returning the floodlamp's power setting
+    // functor for returning the floodlamp's current power setting
     std::uint16_t operator() ()
     {
-        return preg->floodlight_pwr;
+        return get_current_state();
     }
 
 
 private:
+    std::uint16_t get_current_state()
+    {
+        return preg->floodlight_pwr;
+    }
+
     volatile gpio_reg23_ptr_t preg;
 };
 
