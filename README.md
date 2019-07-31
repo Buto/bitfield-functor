@@ -96,20 +96,14 @@ That said, one important design principle is that it is permissible to make the 
 
 Consequently, I am willing to rationalize that functors are a more preferred implementation because calling functors appears as simple as calling a C function.
 
+## Regarding this example's NEED_IC_ID 
+
+  In the case of an given mass-manufactured device, one that is not
+  field programmable so that its registers usage is customizable,
+  as in the case of NEED_IC_ID, the said device's register layouts will always
+  be the same.  In this sort of case code reuse is practical.
 
 
-```
-//-------- These typedefs only exist to instantiate partial specializations ----------
-
-typedef struct solenoid2 * solenoid2_t;
-typedef struct solenoid3 * solenoid3_t;
-typedef std::uint16_t      lamp_t;
-
-template<>
-class gpio_register_23< solenoid2_t  >
-{ ... }
-
-```
-
+[Need to add commentary regarding NEED_IC_ID]
 
 
