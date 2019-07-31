@@ -19,7 +19,7 @@ In addition, this time I wanted to use bit-fields instead of the "raw bits" appr
 ## The two applications for this template/bitfield scheme
  There are two scenarios I wanted to cover in this exercise:
 
-1. functors for a GPIO register that is part of a custom design (e.g., a custom controller board);  and
+1. functors for a GPIO register that is part of a custom design (e.g., a custom controller board); and
 2. functors for the registers of an off-the-shelf IC (e.g., NEED_IC_ID)
 ## Regarding this example's GPIO register
 This GPIO register controls:
@@ -61,11 +61,40 @@ Each functor is implemented via a partial template specialization. Each functor 
 
 These partial template specialization only have a single parameter: a unique type only used to select it from the set of available partial template specializations. 
 
+## About portabilty:
+The layout of the field within a bitfield is implementation dependent. Consequently, this code cannot be expected to be portable between C++ compilers.
+
+This is probably OK for the purposes of embedded programming b/c in the varous shops in which I worked portablity wasn't a concern because each shop used only used one particular C++ compiler for the particular microcontroller they were using.
+
+
 ## Annoyances:
 
 1. Each field within the bit-field requires its own partial specialization of the class template, even if there are two fields with exactly the same usage (scenario: each of the two vacuum solenoids had a distinct field.) This annoyed because it meant code duplication, which defeats the recommendation to keep your code DRY.
 
 2. I needed to introduce extra types just to create distinct partial specialization for each named field. The field names themselves were inadequate for this purpose because they were the same type (std::uint16_t) and each partial specialization requires a distinct type.  This annoyed because I had to declare additional, otherwise pointless type just because of the way partial specialization works.
+
+## Tradeoffs: creating a partial specialization of a class template for each field vs creating a class with a method for each field.
+
+1. Implementing this via, say, a class would not help the code duplication concern because the implementation of the methods for the vacuum solenoids would still mean two distinct member functions, one for each vacuum solenoid. (wash)
+2. Implementing this via, say, a class would remove the need to create types just for the purpose of creating a distinct partial specialization for each solenoid.  (class wins)
+3. Each functors must be individually instantiated while a class need only be instantiated once. (class wins)
+4. The call to the functor() appears to be slightly less complex than a call to a class member function. For example
+````
+   obj.vac_solenoid2(vacuum::ON);
+vs
+   vac_solenoid2(vacuum::ON);
+
+````
+Consequently, a functor call appears to be indistinguishable from calling a C function. (And does anything appears simpler than a C function call?)
+(templates win)
+
+Conclusion:
+
+I cannot, with a straight face, make an argument that either approach has a particularly strong advantage.
+
+That said, one important design principle is that it is permissible to make the implementation somewhat more complex in exchange for simplifying the iterface. This consideration becomes more compelling if the usage of a functor occurs many more times that the effort required to setup a functor.
+
+Consequently, I am willing to rationalize that functors are a more preferred implementation.
 
 
 
