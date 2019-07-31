@@ -116,44 +116,112 @@ Prerequisites
 
 # What things you need to install the software and how to install them
 
-Give examples
+The repro consists of the template for the example's GPIO register and a unit test.  The build environment is designed around Linux. You will need g++ and gmake installed. 
 
 # Installing
 
-A step by step series of examples that tell you how to get a development env running
+Clone this repo to your local machine using https://github.com/Buto/bitfield-functor
 
-Say what the step will be
+To build and execute the unit test:
+````
+$ make all
+g++ -std=c++17 ut_bitfield.cpp -o ut_bitfield.exe
 
-Give the example
+bitfield UT passed
+````
+The unit tests provides a number of real-life examples of using the functors.  
 
-And repeat
+The following is an example of instantating and then using a functor to apply vacuum:
+````
+#include <iostream>
 
-until finished
+#include "bitfield.h"
 
-End with an example of getting some data out of the system or using it for a little demo
+int main(int, char*[])
+{
+    //-----------------------------------
+    //
+    //      Setup a named constant storing the GPIO register's address for the
+    //      purposes of this demo
+    //
+    //      In real life hardware registers will exist at an address assigned by
+    //      someone on the hardware team. These addresses ought to be specified in
+    //      as named constants (eliminating 'magic numbers' elsewhere in the code)
+    //      via a project-wide header file. For example:
+    //
+    //          const unsigned REGISTER_ADDRESS_GPIO23 = 0x12345678;
+    //
+    //      Afterward instantating a functor would look something like:
+    //
+    //          gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    //
+    //      Now we mock-up a hardware register for this demo
+    //
+    static struct genpurpIO_register23 mock_reg23;   // This struc is masquerading as GPIO register #23
+
+    // create a named constant for storing the "register's" address
+    const gpio_reg23_ptr_t REGISTER_ADDRESS_GPIO23 = &mock_reg23;
+    //-----------------------------------
+
+    // create functor for controlling vacuum solenoid #2
+    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+
+    // energize vaccuum solenoid #2, applying vacuum to....something
+    vac_solenoid2(vacuum::ON);
+
+    // if the current state of vaccuum solenoid #2 is energized
+    if (vac_solenoid2() == vacuum::ON)
+    {
+        std::cout << "Works!" << std::endl;
+    }
+    else // the solenoid was incorrectly not energized
+    {
+        std::cerr << "Error: functor failed to set the bit for energizing vaccuum solenoid #2." << std::endl;
+    }
+
+    return 0;
+}
+````
+
 # Running the tests
 
-Explain how to run the automated tests for this system
-Break down into end to end tests
+I am using the unit test scheme described in a book by Brian W. Kernighan and Rob Pike, _The Practice of Programming_.  This technique involves:
+1. the unit test sending the results of the unit test to stdout; and
+2. redirecting this output to a text file; and
+3. comparing this output to a file containing the output from a successful run of the unit test 
 
-Explain what these tests test and why
+The makefile both builds the unit test and automatically runs it when 'make all' is issued at the command line. The makefile will emit "bitfield UT FAILED!" if the code under test fails its unit test. 
+Otherwise the makefile will emit "bitfield UT passed"
 
-Give an example
+The following shows the results of a successful unit test run:
+````
+$ ./ut_bitfield.exe
+ut00: verifing that the ctor initialized solenoid2 to vacuum:OFF.....................................ok
+ut01: verifing that the ctor initialized solenoid3 to vacuum:OFF.....................................ok
+ut02: verifing that the ctor initialized lamp to LIGHTS_OUT..........................................ok
+ut03: verifing that the solenoid2's functor can return solenoid state prior to the functor call......ok
+ut03: verifing that the solenoid2's functor can energize solenoid2...................................ok
+ut04: verifing that the solenoid3's functor can return solenoid state prior to the functor call......ok
+ut04: verifing that the solenoid3's functor can energize solenoid3...................................ok
+ut05: verifing that the solenoid2's functor can return solenoid state prior to the functor call......ok
+ut05: verifing that the solenoid2's functor can de-energize solenoid2................................ok
+ut06: verifing that the solenoid3's functor can return solenoid state prior to the functor call......ok
+ut06: verifing that the solenoid3's functor can de-energize solenoid3................................ok
+ut07: verifing that the lamp's functor can return solenoid state prior to the functor call...........ok
+ut07: verifing that functor can set the lamp to max power............................................ok
+ut08: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
+ut08: Walking 1's testing. power bit pattern == 0B100................................................ok
+ut09: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
+ut09: Walking 1's testing. power bit pattern == 0B010................................................ok
+ut10: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
+ut10: Walking 1's testing. power bit pattern == 0B001................................................ok
+ut11: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
+ut11: Verify that functor can remove power from lamp.................................................ok
+ut12: Verifing lamp_pwr functor throws 'Out of Range' exception......................................ok
+ut12: Verifing 'Out of Range' exception's error message is as expected...............................ok
 
-And coding style tests
-
-Explain what these tests test and why
-
-Give an example
-
-# Deployment
-
-Add additional notes about how to deploy this on a live system
-Built With
-
-    Dropwizard - The web framework used
-    Maven - Dependency Management
-    ROME - Used to generate RSS Feeds
+UNIT TEST passed!
+````
 
 # Contributing
 
@@ -163,14 +231,13 @@ Versioning
 We use SemVer for versioning. For the versions available, see the tags on this repository.
 Authors
 
-    Billie Thompson - Initial work - PurpleBooth
+    John Hendrix 
 
 See also the list of contributors who participated in this project.
-License
+# License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
 # Acknowledgments
 
-    Hat tip to anyone whose code was used
-    Inspiration
-    etc
+    the code for the rtrim() function was lifted from  https://stackoverflow.com/a/217605
+    My thanks to the author for this answer, jotik
