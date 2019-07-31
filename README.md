@@ -61,6 +61,8 @@ Each functor is implemented via a partial template specialization. Each functor 
 
 These partial template specialization only have a single parameter: a unique type only used to select it from the set of available partial template specializations. 
 
+The address of the GPIO register is passed via the functor's constructor (RAII). Afterward the functor's sole parameter is value used to update the field managed by the given functor.  
+
 ## About portabilty:
 The layout of the field within a bitfield is implementation dependent. Consequently, this code cannot be expected to be portable between C++ compilers.
 
