@@ -32,6 +32,11 @@ enum class vacuum: unsigned int
 //          so as to faciliate the 'walking ones' testing to
 //          be conducted during unit testing
 //
+//          Also, assume the lamp's technology enables it
+//          to generate illumination exactly proportional
+//          to power applied (that is, this is not an
+//          incandescent bulb.)
+//
 const std::uint16_t     LAMP_OOR          = 8; // lamp's Out Of Range value
 const std::uint16_t     FULL_ILLUMINATION = 7;
 const std::uint16_t     BRIGHT_LIGHTS     = 4; // Note1
