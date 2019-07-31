@@ -13,8 +13,8 @@ In addition, this time I wanted to use bit-fields instead of the "raw bits" appr
 
 1. I wanted to work with functors
 2. I wanted to work with partial template specialization
-3. I wanted to try using bit-fields instead of the "raw bits" technique
-4. I wanted to discover how much extra code is required to go the generic programming template route.
+3. I wanted to indulge my preference for using bit-fields instead of the "raw bits" technique
+4. I wanted to discover how much extra code, if any, is required to go the generic programming template route.
 
 ## The two applications for this template/bitfield scheme
  There are two scenarios I wanted to cover in this exercise:
