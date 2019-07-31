@@ -127,7 +127,7 @@ To build and execute the unit test:
 $ make all
 g++ -std=c++17 ut_bitfield.cpp -o ut_bitfield.exe
 
-bitfield UT passed
+control_board_gpio_reg23 UT passed
 ````
 The unit tests provides a number of real-life examples of using the functors.  
 
