@@ -94,7 +94,7 @@ I cannot, with a straight face, make an argument that either approach has a part
 
 That said, one important design principle is that it is permissible to make the implementation somewhat more complex in exchange for simplifying the iterface. This consideration becomes more compelling if the usage of a functor occurs many more times that the effort required to setup a functor.
 
-Consequently, I am willing to rationalize that functors are a more preferred implementation.
+Consequently, I am willing to rationalize that functors are a more preferred implementation because calling functors appears as simple as calling a C function.
 
 
 
