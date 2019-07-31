@@ -125,7 +125,7 @@ Clone this repo to your local machine using https://github.com/Buto/bitfield-fun
 To build and execute the unit test:
 ````
 $ make all
-g++ -std=c++17 ut_bitfield.cpp -o ut_bitfield.exe
+g++ -std=c++17 -Wall ut_control_board_gpio_reg23.cpp -o ut_control_board_gpio_reg23.exe
 
 control_board_gpio_reg23 UT passed
 ````
