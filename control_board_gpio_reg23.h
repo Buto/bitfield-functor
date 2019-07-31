@@ -1,4 +1,4 @@
-// bitfield.h
+// control_board_gpio_reg23.h
 
 #include <cstdint>      //  std::uint16_t
 #include <exception>    //  std::range_error

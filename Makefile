@@ -2,8 +2,8 @@
 # builds UT for bitfields
 
 # by 'gold' I mean "The output of a known good UT run."
-GOLD_UT_RESULTS := ./ut_ref_output/bitfield_ut_output.txt
-UT_RESULTS  	:= ./bitfield_ut_output.txt
+GOLD_UT_RESULTS := ./ut_ref_output/control_board_gpio_reg23_ut_output.txt
+UT_RESULTS  	:= ./control_board_gpio_reg23_ut_output.txt
 
 $(subst .run_ut,,$@)
 
@@ -38,26 +38,26 @@ define compare_ut_gold =
 endef
 
 # compare the results of a known-good UT run with outcome of the most recent UT run.
-bitfield.compare_ut_gold:
+control_board_gpio_reg23.compare_ut_gold:
 	$(call compare_ut_gold,$(subst .compare_ut_gold,,$@))
 
 .PHONY:	clean
 clean:
 	rm -f *.o *.exe *.stackdump *.core
 
-ut_bitfield.exe: ut_bitfield.cpp bitfield.h
-	g++ -std=c++17 ut_bitfield.cpp -o ut_bitfield.exe
+ut_control_board_gpio_reg23.exe: ut_control_board_gpio_reg23.cpp control_board_gpio_reg23.h
+	g++ -std=c++17 ut_control_board_gpio_reg23.cpp -o ut_control_board_gpio_reg23.exe
 
 
 
 
-.PHONY:	bitfield.gen_ut_ref_file
-bitfield.gen_ut_ref_file:
+.PHONY:	control_board_gpio_reg23.gen_ut_ref_file
+control_board_gpio_reg23.gen_ut_ref_file:
 	mkdir -p ut_ref_output
-	./ut_bitfield.exe >  $(GOLD_UT_RESULTS)
+	./ut_control_board_gpio_reg23.exe >  $(GOLD_UT_RESULTS)
 
-.PHONY:	bitfield.run_ut
-bitfield.run_ut:
+.PHONY:	control_board_gpio_reg23.run_ut
+control_board_gpio_reg23.run_ut:
 	@./ut_$(subst .run_ut,,$@ ).exe >  $(UT_RESULTS)
 
 
@@ -65,7 +65,7 @@ bitfield.run_ut:
 
 
 .PHONY:	bitfield_all
-bitfield_all:    ut_bitfield.exe   bitfield.run_ut  bitfield.compare_ut_gold
+bitfield_all:    ut_control_board_gpio_reg23.exe   control_board_gpio_reg23.run_ut  control_board_gpio_reg23.compare_ut_gold
 
 .PHONY:	all
 all:    bitfield_all

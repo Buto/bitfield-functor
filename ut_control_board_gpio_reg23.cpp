@@ -1,4 +1,4 @@
-// ut_bitfield.cpp
+// ut_control_board_gpio_reg23.cpp
 
 #include <algorithm>    //  std::find_if
 #include <cassert>      //  assert
@@ -6,7 +6,7 @@
 #include <iostream>     //  for sending text to stdout, stderr
 #include <sstream>      //  std::stringstream, std::string
 
-#include "bitfield.h"
+#include "control_board_gpio_reg23.h"
 
 // ============ helper debug functions ================================
 void print_vac_state( std::uint16_t val)
