@@ -55,7 +55,7 @@ struct genpurpIO_register23
      std::uint16_t                        : 11;   // fill to 16 bits
 };
 ```
-I will refer to the fields with identifiers (meaning all fields in the bitfield execpt for the _filler_ field) as _named fields_. 
+I will refer to the fields with identifiers (meaning all fields in the bitfield except for the _filler_ field) as _named fields_. 
 
 Each functor is implemented via a partial template specialization. Each functor manages exactly one named field. Each functor is defined in its own _partial template specialization_.  Consequently, each named field gets its own partial template specialization.
 
