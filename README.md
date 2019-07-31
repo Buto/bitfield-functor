@@ -21,7 +21,17 @@ In addition, this time I wanted to use bit-fields instead of the "raw bits" appr
 
 1. functors for a GPIO register that is part of a custom design (e.g., a custom controller board);  and
 2. functors for the registers of an off-the-shelf IC (e.g., NEED_IC_ID)
+## Regarding this example's GPIO register
+This GPIO register controls:
+1. two solenoids, each of which operate a valve on a vaccum line; and
+2. a lamp's brightness.
+
+The audence should assume the necessary external circuitry is implemented. For example:
+1. Assume that the bits associated with controlling the vaccum solenoids are connected to circuity (relay drivers, most likely) suitable for controlling power to a solenoid's coil.
+2. Assume that the bits associated with controlling the lights are connected to a DAC, followed by suitable power control circuitry for modulating the power applied to the lamp. 
+3. Assume that the lamp's illumination is exactly proportional to power applied (which cannot be expected with incandescent lamps.)
 ## Regarding the template for the GPIO register
+
 The irony of using a template to operate on a GPIO register hardwired to a custom design can be summed up in two points:
 
 1. The point of templates is to facilitate generic programming;
@@ -34,7 +44,7 @@ Unresusable code means that you're not much better off than writing bit manipula
 This means you cannot expect to reuse functors created for customizeable registers on other, unreleated, designs. Of course this code might be reusable should the design team reuse the hardware design pertaining to the GPIO register, say, on another version of the control board.
 
 ## Specializing the templates for the GPIO register's named bitfields 
-The GPIO register's bitfield is defined:
+This example's GPIO register's bitfield is defined:
 
 ```
 struct genpurpIO_register23
@@ -45,11 +55,19 @@ struct genpurpIO_register23
      std::uint16_t                        : 11;   // fill to 16 bits
 };
 ```
-I refer to the fields within the bitfield (e.g., energize_vac_solenoid2, et al), as _named fields_. 
+I will refer to the fields with identifiers (meaning all fields in the bitfield execpt for the _filler_ field) as _named fields_. 
 
 Each functor is implemented via a partial template specialization. Each functor manages exactly one named field. Each functor is defined in its own _partial template specialization_.  Consequently, each named field gets its own partial template specialization.
 
-These partial template specialization only have a single parameter: a unique type only used to select it out of the list of available partial template specializations. 
+These partial template specialization only have a single parameter: a unique type only used to select it from the set of available partial template specializations. 
+
+## Annoyances:
+
+1. Each field within the bit-field requires its own partial specialization of the class template, even if there are two fields with exactly the same usage (scenario: each of the two vacuum solenoids had a distinct field.) This annoyed because it meant code duplication, which defeats the recommendation to keep your code DRY.
+
+2. I needed to introduce extra types just to create distinct partial specialization for each named field. The field names themselves were inadequate for this purpose because they were the same type (std::uint16_t) and each partial specialization requires a distinct type.  This annoyed because I had to declare additional, otherwise pointless type just because of the way partial specialization works.
+
+
 
 ```
 //-------- These typedefs only exist to instantiate partial specializations ----------
