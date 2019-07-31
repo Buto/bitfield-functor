@@ -1,6 +1,6 @@
 ut00: verifing that the ctor initialized solenoid2 to vacuum:OFF.....................................ok
 ut01: verifing that the ctor initialized solenoid3 to vacuum:OFF.....................................ok
-ut02: verifing that the ctor initialized floodlamp to LIGHTS_OUT.....................................ok
+ut02: verifing that the ctor initialized lamp to LIGHTS_OUT..........................................ok
 ut03: verifing that the solenoid2's functor can return solenoid state prior to the functor call......ok
 ut03: verifing that the solenoid2's functor can energize solenoid2...................................ok
 ut04: verifing that the solenoid3's functor can return solenoid state prior to the functor call......ok
@@ -9,17 +9,17 @@ ut05: verifing that the solenoid2's functor can return solenoid state prior to t
 ut05: verifing that the solenoid2's functor can de-energize solenoid2................................ok
 ut06: verifing that the solenoid3's functor can return solenoid state prior to the functor call......ok
 ut06: verifing that the solenoid3's functor can de-energize solenoid3................................ok
-ut07: verifing that the floodlamp's functor can return solenoid state prior to the functor call......ok
-ut07: verifing that functor can set the floodlamp to max power.......................................ok
-ut08: verifing that the floodlamp's functor can return floodlamp state prior to the functor call.....ok
+ut07: verifing that the lamp's functor can return solenoid state prior to the functor call...........ok
+ut07: verifing that functor can set the lamp to max power............................................ok
+ut08: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
 ut08: Walking 1's testing. power bit pattern == 0B100................................................ok
-ut09: verifing that the floodlamp's functor can return floodlamp state prior to the functor call.....ok
+ut09: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
 ut09: Walking 1's testing. power bit pattern == 0B010................................................ok
-ut10: verifing that the floodlamp's functor can return floodlamp state prior to the functor call.....ok
+ut10: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
 ut10: Walking 1's testing. power bit pattern == 0B001................................................ok
-ut11: verifing that the floodlamp's functor can return floodlamp state prior to the functor call.....ok
-ut11: Verify that functor can remove power from floodlamp............................................ok
-ut12: Verifing floodlamp throws 'Out of Range' exception.............................................ok
+ut11: verifing that the lamp's functor can return lamp state prior to the functor call...............ok
+ut11: Verify that functor can remove power from lamp.................................................ok
+ut12: Verifing lamp_pwr functor throws 'Out of Range' exception......................................ok
 ut12: Verifing 'Out of Range' exception's error message is as expected...............................ok
 
 UNIT TEST passed!

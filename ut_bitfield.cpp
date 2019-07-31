@@ -36,7 +36,7 @@ void print_reg(struct genpurpIO_register23* reg)
 {
     std::cout << "reg value (raw bits)" << reg->energize_vac_solenoid2  << std::endl;
     std::cout << "reg value (raw bits)" << reg->energize_vac_solenoid3  << std::endl;
-    std::cout << "reg value (raw bits)" << reg->floodlight_pwr  << std::endl;
+    std::cout << "reg value (raw bits)" << reg->lamp_pwr  << std::endl;
 
     std::cout << "vac_solenoid2 state:(";
     print_vac_state( reg->energize_vac_solenoid2 );
@@ -44,7 +44,7 @@ void print_reg(struct genpurpIO_register23* reg)
     std::cout << "vac_solenoid3 state:(";
     print_vac_state( reg->energize_vac_solenoid3 );
 
-    std::cout << "flood light pwr setting:(" << reg->floodlight_pwr << ")" << std::endl << std::endl;
+    std::cout << "flood light pwr setting:(" << reg->lamp_pwr << ")" << std::endl << std::endl;
 }
 
 // deliberately_throw_exception() is not part of the unit test suite
@@ -131,7 +131,7 @@ static inline void rtrim(std::string &s)
 //      as named constants (eliminating 'magic numbers' elsewhere in the code)
 //      via a project-wide header file. For example:
 //
-//          static const unsigned REGISTER_ADDRESS_GPIO23 = 0x12345678;
+//          const unsigned REGISTER_ADDRESS_GPIO23 = 0x12345678;
 //
 //      Afterward instantating a functor would look something like:
 //
@@ -142,7 +142,7 @@ static inline void rtrim(std::string &s)
     static struct genpurpIO_register23 mock_reg23;   // This is masquerading as GPIO register #23
 
     // create a named constant for storing the "register's" address
-    static const gpio_reg23_ptr_t REGISTER_ADDRESS_GPIO23 = &mock_reg23;
+    const gpio_reg23_ptr_t REGISTER_ADDRESS_GPIO23 = &mock_reg23;
 
 //==================================================================
 
@@ -197,14 +197,14 @@ int ut_verify_solenoid_state(
 
 
 // ut_verify_lamp_state() general purpose UT boilerplate for
-// unit testing the functor that returns the current state of floodlamp
+// unit testing the functor that returns the current state of lamp
 //
 // keeping it DRY
 int ut_verify_lamp_state(
                             const std::string& utid,               // ut17, ut18, etc.
                             const std::string& intent,             // what UT is attempting to verify
-                            const std::uint16_t actual_settings,   // flood lamp's actual state
-                            const std::uint16_t expected_settings  // flood lamp's expected state
+                            const std::uint16_t actual_settings,   // flood lamp_pwr's actual state
+                            const std::uint16_t expected_settings  // flood lamp_pwr's expected state
                         )
 {
     int something_failed = 1;    // init to UT failure
@@ -295,23 +295,23 @@ int ut01()
 }
 
 
-// verify that the ctor sets the floodlamp to LIGHTS_OUT
+// verify that the ctor sets the lamp to LIGHTS_OUT
 int ut02()
 {
     //------------------------------------------------------------
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42. ctor initializes the floodlamp to LIGHTS_OUT
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) }; // for lamp #42
+    // create functor for controlling lamp #42. ctor initializes the lamp to LIGHTS_OUT
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) }; // for lamp_pwr #42
 
-    std::string ut_intent {  "verifing that the ctor initialized floodlamp to LIGHTS_OUT" };
+    std::string ut_intent {  "verifing that the ctor initialized lamp to LIGHTS_OUT" };
 
     return ut_verify_lamp_state(
                                     std::string { __func__ },   // utid,
                                     ut_intent,                  // what UT is attempting to verify
-                                    flood_light42(),            // flood lamp's actual settings
-                                    LIGHTS_OUT                  // flood lamp's expected settings
+                                    lamp42(),            // flood lamp_pwr's actual settings
+                                    LIGHTS_OUT                  // flood lamp_pwr's expected settings
                                );
 }
 
@@ -513,7 +513,7 @@ int ut06()
 }
 
 
-// verify that the floodlamp's functor can set power-level
+// verify that the lamp's functor can set power-level
 int ut07()
 {
     int something_failed = 0;
@@ -522,8 +522,8 @@ int ut07()
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -531,28 +531,28 @@ int ut07()
     //
 
     {
-        std::string ut_intent {  "verifing that the floodlamp's functor can return solenoid state prior to the functor call" };
+        std::string ut_intent {  "verifing that the lamp's functor can return solenoid state prior to the functor call" };
 
         // note1: The functor both:
-        //      1) sets the floodlamp's power setting to a new setting
-        //      2) returns the floodlamp's power setting that existed prior to calling the functor.
+        //      1) sets the lamp's power setting to a new setting
+        //      2) returns the lamp's power setting that existed prior to calling the functor.
         //
-        // note2: the floodlamp's expected power setting prior to the functor call.
+        // note2: the lamp's expected power setting prior to the functor call.
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },         // utid,
                                                     ut_intent,                        // what UT is attempting to verify
-                                                    flood_light42(FULL_ILLUMINATION), // all bits set to 1
+                                                    lamp42(FULL_ILLUMINATION), // all bits set to 1
                                                     LIGHTS_OUT                        // note2
                                                 );
     }
 
     {
-        std::string ut_intent {  "verifing that functor can set the floodlamp to max power" };
+        std::string ut_intent {  "verifing that functor can set the lamp to max power" };
 
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    flood_light42(),          // obtain power setting
+                                                    lamp42(),          // obtain power setting
                                                     FULL_ILLUMINATION         // note2
                                                 );
     }
@@ -561,7 +561,7 @@ int ut07()
 }
 
 
-// verify that the floodlamp's functor can set power-level
+// verify that the lamp's functor can set power-level
 int ut08()
 {
     int something_failed = 0;
@@ -571,8 +571,8 @@ int ut08()
     // setup for unit test
     //
 
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -580,20 +580,20 @@ int ut08()
     //
 
     {
-        std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
+        std::string ut_intent {  "verifing that the lamp's functor can return lamp state prior to the functor call" };
 
-        flood_light42(FULL_ILLUMINATION), // precondition: full power
+        lamp42(FULL_ILLUMINATION), // precondition: full power
 
         // note1: The functor both:
-        //      1) sets the floodlamp's power setting to a new setting.
+        //      1) sets the lamp's power setting to a new setting.
         //         the next few unit tests will conduct walking 1's testing
-        //      2) returns the floodlamp's power setting that existed prior to calling the functor.
+        //      2) returns the lamp's power setting that existed prior to calling the functor.
         //
-        // note2: the floodlamp's expected power setting prior to the functor call.
+        // note2: the lamp's expected power setting prior to the functor call.
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },     // utid,
                                                     ut_intent,                    // what UT is attempting to verify
-                                                    flood_light42(BRIGHT_LIGHTS), // walking 1's testing. note1
+                                                    lamp42(BRIGHT_LIGHTS), // walking 1's testing. note1
                                                     FULL_ILLUMINATION             // note2
                                                 );
     }
@@ -604,7 +604,7 @@ int ut08()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    flood_light42(),          // obtain power setting
+                                                    lamp42(),          // obtain power setting
                                                     BRIGHT_LIGHTS             // note2
                                                 );
     }
@@ -613,7 +613,7 @@ int ut08()
 }
 
 
-// verify that the floodlamp's functor can set power-level
+// verify that the lamp's functor can set power-level
 int ut09()
 {
     int something_failed = 0;
@@ -622,8 +622,8 @@ int ut09()
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -631,20 +631,20 @@ int ut09()
     //
 
     {
-        std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
+        std::string ut_intent {  "verifing that the lamp's functor can return lamp state prior to the functor call" };
 
-        flood_light42(BRIGHT_LIGHTS), // precondition: power setting bit pattern == 0B100
+        lamp42(BRIGHT_LIGHTS), // precondition: power setting bit pattern == 0B100
 
         // note1: The functor both:
-        //      1) sets the floodlamp's power setting to a new setting.
+        //      1) sets the lamp's power setting to a new setting.
         //         the next few unit tests will conduct walking 1's testing
-        //      2) returns the floodlamp's power setting that existed prior to calling the functor.
+        //      2) returns the lamp's power setting that existed prior to calling the functor.
         //
-        // note2: the floodlamp's expected power setting prior to the functor call.
+        // note2: the lamp's expected power setting prior to the functor call.
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },     // utid,
                                                     ut_intent,                    // what UT is attempting to verify
-                                                    flood_light42(MOOD_LIGHTING), // walking 1's testing. note1
+                                                    lamp42(MOOD_LIGHTING), // walking 1's testing. note1
                                                     BRIGHT_LIGHTS                 // note2
                                                 );
     }
@@ -655,7 +655,7 @@ int ut09()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    flood_light42(),          // obtain power setting
+                                                    lamp42(),          // obtain power setting
                                                     MOOD_LIGHTING             // note2
                                                 );
     }
@@ -664,7 +664,7 @@ int ut09()
 }
 
 
-// verify that the floodlamp's functor can set power-level
+// verify that the lamp's functor can set power-level
 int ut10()
 {
     int something_failed = 0;
@@ -673,8 +673,8 @@ int ut10()
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -682,20 +682,20 @@ int ut10()
     //
 
     {
-        std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
+        std::string ut_intent {  "verifing that the lamp's functor can return lamp state prior to the functor call" };
 
-        flood_light42(MOOD_LIGHTING), // precondition: power setting bit pattern == 0B010
+        lamp42(MOOD_LIGHTING), // precondition: power setting bit pattern == 0B010
 
         // note1: The functor both:
-        //      1) sets the floodlamp's power setting to a new setting.
+        //      1) sets the lamp's power setting to a new setting.
         //         the next few unit tests will conduct walking 1's testing
-        //      2) returns the floodlamp's power setting that existed prior to calling the functor.
+        //      2) returns the lamp's power setting that existed prior to calling the functor.
         //
-        // note2: the floodlamp's expected power setting prior to the functor call.
+        // note2: the lamp's expected power setting prior to the functor call.
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },       // utid,
                                                     ut_intent,                      // what UT is attempting to verify
-                                                    flood_light42(VERY_DIM_LIGHTS), // walking 1's testing. note1
+                                                    lamp42(VERY_DIM_LIGHTS), // walking 1's testing. note1
                                                     MOOD_LIGHTING                   // note2
                                                 );
     }
@@ -706,7 +706,7 @@ int ut10()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    flood_light42(),          // obtain power setting
+                                                    lamp42(),          // obtain power setting
                                                     VERY_DIM_LIGHTS           // note2
                                                 );
     }
@@ -715,7 +715,7 @@ int ut10()
 }
 
 
-// verify that the floodlamp's functor can set power-level
+// verify that the lamp's functor can set power-level
 int ut11()
 {
     int something_failed = 0;
@@ -724,8 +724,8 @@ int ut11()
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
     //------------------------------------------------------------
     //
@@ -733,31 +733,31 @@ int ut11()
     //
 
     {
-        std::string ut_intent {  "verifing that the floodlamp's functor can return floodlamp state prior to the functor call" };
+        std::string ut_intent {  "verifing that the lamp's functor can return lamp state prior to the functor call" };
 
-        flood_light42(VERY_DIM_LIGHTS), // precondition: power setting bit pattern == 0B010
+        lamp42(VERY_DIM_LIGHTS), // precondition: power setting bit pattern == 0B010
 
         // note1: The functor both:
-        //      1) sets the floodlamp's power setting to a new setting.
+        //      1) sets the lamp's power setting to a new setting.
         //         the next few unit tests will conduct walking 1's testing
-        //      2) returns the floodlamp's power setting that existed prior to calling the functor.
+        //      2) returns the lamp's power setting that existed prior to calling the functor.
         //
-        // note2: the floodlamp's expected power setting prior to the functor call.
+        // note2: the lamp's expected power setting prior to the functor call.
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },  // utid,
                                                     ut_intent,                 // what UT is attempting to verify
-                                                    flood_light42(LIGHTS_OUT), // walking 1's testing. note1
+                                                    lamp42(LIGHTS_OUT), // walking 1's testing. note1
                                                     VERY_DIM_LIGHTS            // note2
                                                 );
     }
 
     {
-        std::string ut_intent {  "Verify that functor can remove power from floodlamp" };
+        std::string ut_intent {  "Verify that functor can remove power from lamp" };
 
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    flood_light42(),          // obtain power setting
+                                                    lamp42(),          // obtain power setting
                                                     LIGHTS_OUT                // note2
                                                 );
     }
@@ -774,12 +774,12 @@ int ut12()
     //
     // setup for unit test
     //
-    // create functor for controlling floodlamp #42
-    gpio_register_23< floodlight_t > flood_light42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    // create functor for controlling lamp #42
+    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
 
 
     std::stringstream ut_intent {};
-    ut_intent <<  "Verifing floodlamp throws 'Out of Range' exception.";
+    ut_intent <<  "Verifing lamp_pwr functor throws 'Out of Range' exception.";
     ut_intent <<  "......................................................";   // note4
 
     //------------------------------------------------------------
@@ -791,8 +791,8 @@ int ut12()
 
     try
     {
-        // attempt to set floodlamp power level beyond max possible power settings.
-        flood_light42(FLOODLIGHT_OOR); // should throw out of range exception here
+        // attempt to set lamp power level beyond max possible power settings.
+        lamp42(LAMP_OOR); // should throw out of range exception here
 
         // still here? Then the functor failed to throw an Out Of Range exception
         something_failed = 1;    // indicate UT failure
@@ -804,7 +804,7 @@ int ut12()
     }
     catch (std::range_error & e)
     {
-        // if we are here then the floodlamp functor successfully
+        // if we are here then the lamp functor successfully
         // threw a std::range_error when it was passed an illegal power level
 
         something_failed = 0;    // indicate UT passed
@@ -827,8 +827,8 @@ int ut12()
         tmp.clear();            // reset to empty string
         tmp = ut_intent.str();
 
-        std::string expected_except_msg {"Incorrect attempt to set floodlight #42 pwr value to (8). "
-                                         "Valid pwr settings range for floodlight #42 is 0:7. "};
+        std::string expected_except_msg {"Incorrect attempt to set lamp #42 pwr value to (8). "
+                                         "Valid pwr settings range for lamp #42 is 0:7. "};
 
         // if the exception's message is as expected.
         if ( e.what() == expected_except_msg)
@@ -869,7 +869,7 @@ int main( int argc, char * argv[] )
         //
         something_failed += ut00();     // verify that the ctor sets solenoid2 to vacuum:OFF
         something_failed += ut01();     // verify that the ctor sets solenoid3 to vacuum:OFF
-        something_failed += ut02();     // verify that the ctor sets floodlamp to LIGHTS_OUT
+        something_failed += ut02();     // verify that the ctor sets lamp to LIGHTS_OUT
         //
         //-------------------------------------------------------------
         //
@@ -884,11 +884,11 @@ int main( int argc, char * argv[] )
         //
         // Floodlamp functors
         //
-        something_failed += ut07();     // verify floodlamp's functor can set floodlamp to max power
-        something_failed += ut08();     // walking 1's testing: floodlamp's power-level == 100
-        something_failed += ut09();     // walking 1's testing: floodlamp's power-level == 010
-        something_failed += ut10();     // walking 1's testing: floodlamp's power-level == 001
-        something_failed += ut11();     // verify floodlamp's functor remove power from floodlamp
+        something_failed += ut07();     // verify lamp's functor can set lamp to max power
+        something_failed += ut08();     // walking 1's testing: lamp's power-level == 100
+        something_failed += ut09();     // walking 1's testing: lamp's power-level == 010
+        something_failed += ut10();     // walking 1's testing: lamp's power-level == 001
+        something_failed += ut11();     // verify lamp's functor remove power from lamp
         //
         //-------------------------------------------------------------
         //
