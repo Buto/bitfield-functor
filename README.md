@@ -223,13 +223,7 @@ ut12: Verifing 'Out of Range' exception's error message is as expected..........
 UNIT TEST passed!
 ````
 
-# Contributing
-
-Please read CONTRIBUTING.md for details on our code of conduct, and the process for submitting pull requests to us.
-Versioning
-
-We use SemVer for versioning. For the versions available, see the tags on this repository.
-Authors
+# Author
 
     John Hendrix 
 
