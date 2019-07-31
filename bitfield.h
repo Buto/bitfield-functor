@@ -2,6 +2,7 @@
 
 #include <cstdint>      //  std::uint16_t
 #include <exception>    //  std::range_error
+#include <sstream>      //  std::stringstream
 
 
 // in real life there we can expect multiple GPIO registers. In this toy
