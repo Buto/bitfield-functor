@@ -46,7 +46,7 @@ clean:
 	rm -f *.o *.exe *.stackdump *.core
 
 ut_control_board_gpio_reg23.exe: ut_control_board_gpio_reg23.cpp control_board_gpio_reg23.h
-	g++ -std=c++17 ut_control_board_gpio_reg23.cpp -o ut_control_board_gpio_reg23.exe
+	g++ -std=c++17 -Wall ut_control_board_gpio_reg23.cpp -o ut_control_board_gpio_reg23.exe
 
 
 
