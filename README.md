@@ -37,7 +37,7 @@ The irony of using a template to operate on a GPIO register hardwired to a custo
 1. The point of templates is to facilitate generic programming;
 2. I cannot conceive of a way to abstract bitfield usage in such a way that one template can accomodate all designs for using a GPIO register.
 
-Put another way, the highly hardware implementation specific concerns of register bit-twiddling defeats generic programming's intent of code reuse.  Consequently, the template code for something like a GPIO register will be a one-off, unreusable code.
+Put another way, the highly hardware-specific implementation specific concerns for register bit-twiddling defeats generic programming's intent of code reuse.  Consequently, the template code for something like a GPIO register will be a one-off, unreusable code.
 
 Unresusable code means that you're not much better off than writing bit manipulation functions in C as compared to templates, at least with respect to the number of lines of code.
 
