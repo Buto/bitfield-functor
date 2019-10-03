@@ -127,7 +127,7 @@ static inline void rtrim(std::string &s)
 //  Commentary about this "GPIO register #23":
 //
 //      In real life hardware registers will exist at an address assigned by
-//      someone on the hardware team. These addresses ought to be specified in
+//      someone on the hardware team. These addresses ought to be specified
 //      as named constants (eliminating 'magic numbers' elsewhere in the code)
 //      via a project-wide header file. For example:
 //
