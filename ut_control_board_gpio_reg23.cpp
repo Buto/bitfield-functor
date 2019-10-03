@@ -68,7 +68,7 @@ int deliberately_throw_exception()
 
 // ============ end of helper debug functions ================================
 
-const std::size_t ok_col_pos   { 95 };  // column position for "ok" text   See note1
+const std::size_t OK_COL_POS   { 95 };  // column position for "ok" text   See note1
 
 // rtrim() -- toss trailing dots from end of a string
 //
@@ -131,11 +131,11 @@ static inline void rtrim(std::string &s)
 //      as named constants (eliminating 'magic numbers' elsewhere in the code)
 //      via a project-wide header file. For example:
 //
-//          const unsigned REGISTER_ADDRESS_GPIO23 = 0x12345678;
+//          const gpio_reg23_ptr_t REGISTER_ADDRESS_GPIO23 = reinterpret_cast<gpio_reg23_ptr_t>(0x12345678);
 //
 //      Afterward instantating a functor would look something like:
 //
-//          gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+//          gpio_register_23< solenoid2_t > vac_solenoid2{ REGISTER_ADDRESS_GPIO23 };
 //
 //      Setup a named constant storing the GPIO register's address for the purposes of the UT
 //
@@ -187,7 +187,7 @@ int ut_verify_solenoid_state(
 
         ut_intent <<  "......................................................";   // note4
         std::string tmp { ut_intent.str()  };
-        tmp.insert( ok_col_pos, "ok" );     // columnize "ok" text   See note1
+        tmp.insert( OK_COL_POS, "ok" );     // columnize "ok" text   See note1
         rtrim(tmp);                         // toss trailing dots
         std::cout << tmp << std::endl;
     }
@@ -233,7 +233,7 @@ int ut_verify_lamp_state(
 
         ut_intent <<  "......................................................";   // note4
         std::string tmp { ut_intent.str()  };
-        tmp.insert( ok_col_pos, "ok" );     // columnize "ok" text   See note1
+        tmp.insert( OK_COL_POS, "ok" );     // columnize "ok" text   See note1
         rtrim(tmp);                         // toss trailing dots
         std::cout << tmp << std::endl;
     }
@@ -252,7 +252,7 @@ int ut00()
     //
 
     // create functor for controlling vacuum solenoid #2
-    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid2_t > vac_solenoid2{ REGISTER_ADDRESS_GPIO23 };
     std::string ut_intent {  "verifing that the ctor initialized solenoid2 to vacuum:OFF" };
 
     //------------------------------------------------------------
@@ -277,7 +277,7 @@ int ut01()
     //
 
     // create functor for controlling vacuum solenoid #3
-    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid3_t > vac_solenoid3{ REGISTER_ADDRESS_GPIO23 };
 
     std::string ut_intent {  "verifing that the ctor initialized solenoid3 to vacuum:OFF" };
 
@@ -303,14 +303,14 @@ int ut02()
     // setup for unit test
     //
     // create functor for controlling lamp #42. ctor initializes the lamp to LIGHTS_OUT
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) }; // for lamp_pwr #42
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 }; // for lamp_pwr #42
 
     std::string ut_intent {  "verifing that the ctor initialized lamp to LIGHTS_OUT" };
 
     return ut_verify_lamp_state(
                                     std::string { __func__ },   // utid,
                                     ut_intent,                  // what UT is attempting to verify
-                                    lamp42(),            // flood lamp_pwr's actual settings
+                                    lamp42(),                   // flood lamp_pwr's actual settings
                                     LIGHTS_OUT                  // flood lamp_pwr's expected settings
                                );
 }
@@ -326,7 +326,7 @@ int ut03()
     //
 
     // create functor for controlling vacuum solenoid #2
-    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid2_t > vac_solenoid2{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -356,7 +356,7 @@ int ut03()
                                                             std::string { __func__ }, // utid,
                                                             ut_intent,                // what UT is attempting to verify
                                                             vac_solenoid2(),          // solenoid's actual state
-                                                            vacuum::ON               // solenoid's expected state
+                                                            vacuum::ON                // solenoid's expected state
                                                     );
     }
 
@@ -375,7 +375,7 @@ int ut04()
     //
 
     // create functor for controlling vacuum solenoid #3
-    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid3_t > vac_solenoid3{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -422,7 +422,7 @@ int ut05()
     // setup for unit test
     //
     // create functor for controlling vacuum solenoid #2
-    gpio_register_23< solenoid2_t > vac_solenoid2{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid2_t > vac_solenoid2{ REGISTER_ADDRESS_GPIO23 };
 
     vac_solenoid2(vacuum::ON);
 
@@ -473,7 +473,7 @@ int ut06()
     //
 
     // create functor for controlling vacuum solenoid #3
-    gpio_register_23< solenoid3_t > vac_solenoid3{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< solenoid3_t > vac_solenoid3{ REGISTER_ADDRESS_GPIO23 };
 
     vac_solenoid3(vacuum::ON);
 
@@ -505,7 +505,7 @@ int ut06()
                                                             std::string { __func__ }, // utid,
                                                             ut_intent,                // what UT is attempting to verify
                                                             vac_solenoid3(),          // solenoid's actual state
-                                                            vacuum::OFF                // solenoid's expected state
+                                                            vacuum::OFF               // solenoid's expected state
                                                     );
     }
 
@@ -523,7 +523,7 @@ int ut07()
     // setup for unit test
     //
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -541,7 +541,7 @@ int ut07()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },         // utid,
                                                     ut_intent,                        // what UT is attempting to verify
-                                                    lamp42(FULL_ILLUMINATION), // all bits set to 1
+                                                    lamp42(FULL_ILLUMINATION),        // all bits set to 1
                                                     LIGHTS_OUT                        // note2
                                                 );
     }
@@ -552,7 +552,7 @@ int ut07()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    lamp42(),          // obtain power setting
+                                                    lamp42(),                 // obtain power setting
                                                     FULL_ILLUMINATION         // note2
                                                 );
     }
@@ -572,7 +572,7 @@ int ut08()
     //
 
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -593,7 +593,7 @@ int ut08()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },     // utid,
                                                     ut_intent,                    // what UT is attempting to verify
-                                                    lamp42(BRIGHT_LIGHTS), // walking 1's testing. note1
+                                                    lamp42(BRIGHT_LIGHTS),        // walking 1's testing. note1
                                                     FULL_ILLUMINATION             // note2
                                                 );
     }
@@ -604,7 +604,7 @@ int ut08()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    lamp42(),          // obtain power setting
+                                                    lamp42(),                 // obtain power setting
                                                     BRIGHT_LIGHTS             // note2
                                                 );
     }
@@ -623,7 +623,7 @@ int ut09()
     // setup for unit test
     //
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -644,7 +644,7 @@ int ut09()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },     // utid,
                                                     ut_intent,                    // what UT is attempting to verify
-                                                    lamp42(MOOD_LIGHTING), // walking 1's testing. note1
+                                                    lamp42(MOOD_LIGHTING),        // walking 1's testing. note1
                                                     BRIGHT_LIGHTS                 // note2
                                                 );
     }
@@ -655,7 +655,7 @@ int ut09()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    lamp42(),          // obtain power setting
+                                                    lamp42(),                 // obtain power setting
                                                     MOOD_LIGHTING             // note2
                                                 );
     }
@@ -674,7 +674,7 @@ int ut10()
     // setup for unit test
     //
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -695,7 +695,7 @@ int ut10()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },       // utid,
                                                     ut_intent,                      // what UT is attempting to verify
-                                                    lamp42(VERY_DIM_LIGHTS), // walking 1's testing. note1
+                                                    lamp42(VERY_DIM_LIGHTS),        // walking 1's testing. note1
                                                     MOOD_LIGHTING                   // note2
                                                 );
     }
@@ -706,7 +706,7 @@ int ut10()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    lamp42(),          // obtain power setting
+                                                    lamp42(),                 // obtain power setting
                                                     VERY_DIM_LIGHTS           // note2
                                                 );
     }
@@ -725,7 +725,7 @@ int ut11()
     // setup for unit test
     //
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
     //------------------------------------------------------------
     //
@@ -746,7 +746,7 @@ int ut11()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ },  // utid,
                                                     ut_intent,                 // what UT is attempting to verify
-                                                    lamp42(LIGHTS_OUT), // walking 1's testing. note1
+                                                    lamp42(LIGHTS_OUT),        // walking 1's testing. note1
                                                     VERY_DIM_LIGHTS            // note2
                                                 );
     }
@@ -757,7 +757,7 @@ int ut11()
         something_failed += ut_verify_lamp_state(
                                                     std::string { __func__ }, // utid,
                                                     ut_intent,                // what UT is attempting to verify
-                                                    lamp42(),          // obtain power setting
+                                                    lamp42(),                 // obtain power setting
                                                     LIGHTS_OUT                // note2
                                                 );
     }
@@ -775,7 +775,7 @@ int ut12()
     // setup for unit test
     //
     // create functor for controlling lamp #42
-    gpio_register_23< lamp_t > lamp42{ reinterpret_cast<gpio_reg23_ptr_t>(REGISTER_ADDRESS_GPIO23) };
+    gpio_register_23< lamp_t > lamp42{ REGISTER_ADDRESS_GPIO23 };
 
 
     std::stringstream ut_intent {};
@@ -798,7 +798,7 @@ int ut12()
         something_failed = 1;    // indicate UT failure
 
         std::string tmp { ut_intent.str()  };
-        tmp.insert( ok_col_pos, "FAILED!" );    // columnize "FAILED!" text   See note1
+        tmp.insert( OK_COL_POS, "FAILED!" );    // columnize "FAILED!" text   See note1
         rtrim(tmp);                             // toss trailing dots
         std::cout << tmp << std::endl;
     }
@@ -810,7 +810,7 @@ int ut12()
         something_failed = 0;    // indicate UT passed
 
         std::string tmp { ut_intent.str()  };
-        tmp.insert( ok_col_pos, "ok" );     // columnize "ok" text   See note1
+        tmp.insert( OK_COL_POS, "ok" );     // columnize "ok" text   See note1
         rtrim(tmp);                         // toss trailing dots
         std::cout << tmp << std::endl;
 
@@ -835,7 +835,7 @@ int ut12()
         {
             // then this test passed
 
-            tmp.insert( ok_col_pos, "ok" );     // columnize "ok" text   See note1
+            tmp.insert( OK_COL_POS, "ok" );     // columnize "ok" text   See note1
             rtrim(tmp);                         // toss trailing dots
             std::cout << tmp << std::endl;
         }
@@ -843,7 +843,7 @@ int ut12()
         {
             something_failed += 1;    // indicate UT failure
 
-            tmp.insert( ok_col_pos, "FAILED!" ); // columnize "FAILED!" text   See note1
+            tmp.insert( OK_COL_POS, "FAILED!" ); // columnize "FAILED!" text   See note1
             rtrim(tmp);                          // toss trailing dots
             std::cout << tmp << std::endl;
             std::cout << "incorrect exception message: (" << e.what()               << ")" << std::endl;
